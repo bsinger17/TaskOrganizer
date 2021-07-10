@@ -15,16 +15,49 @@ void Task::print_task_details() const
 		<< std::endl;
 }
 
+//getters
+std::string Task::get_due_date() const
+{
+	return due_date;
+}
 
-//std::string get_due_date(const std::string& name) const;
-//int get_task_priority(const std::string& name) const;
-//TaskState get_task_state(const std::string& name) const;
+int Task::get_task_priority() const
+{
+	return task_priority;
+}
+
+TaskState Task::get_task_state() const
+{
+	return task_state;
+}
+
+//setters
+void Task::set_task_due_date(const std::string& date) //TODO: implement with a Date class
+{
+	due_date = date;
+}
+
+void Task::set_task_priority(int priority_value)
+{
+	if(priority_value < 0) task_priority = 0;
+	else if(priority_value > 5) task_priority = 5;
+	else task_priority = priority_value;
+}
+
+void Task::set_task_state(TaskState ts)
+{
+	task_state = ts;
+}
+
+
+//TODO: implement helper function
+//bool is_past_due() const
+//{
 //
-////setters
-//std::string set_task_due_date(std::string& name);
-//int set_task_priority(std::string& name);
-//TaskState set_task_state(std::string& name);
+//}
+
+//TODO: implement helper function
+//int days_remaining(const std::string& name) const
+//{
 //
-////helper functions
-//bool is_past_due(const std::string& name) const;
-//int days_remaining(const std::string& name) const;
+//}

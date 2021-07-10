@@ -29,7 +29,13 @@ int main()
         << "\n>>";
 
     Task t1{ "task1","1/1/2022",2,TaskState::new_task };
+    Task t2{ "task2","2/2/2022",2,TaskState::in_progress };
+    Task t3{ "task3","10/19/2021",0,TaskState::on_hold };
 
+    //TODO: store tasks in a file and read into a data structure
+    //for now store them in a vector:
+
+    std::vector<Task> task_store = { t1, t2, t3 };
 
     while (std::cin>>input)
     {
@@ -38,7 +44,13 @@ int main()
         case '1':
             //view current task list
             //std::cout << "\nCurrent Task List:\n...\n...\n...";
-            t1.print_task_details();
+            //t1.print_task_details();
+            //t2.print_task_details();
+            //t2.set_task_due_date(t1.get_due_date());
+            t3.set_task_priority(7);
+            t3.print_task_details();
+
+
             break;
         case '2':
             //create new task
