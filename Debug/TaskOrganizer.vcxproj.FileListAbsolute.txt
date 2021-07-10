@@ -1,0 +1,2 @@
+C:\Programming\Projects\TaskOrganizer\TaskOrganizer\Debug\TaskOrganizer.exe
+C:\Programming\Projects\TaskOrganizer\TaskOrganizer\Debug\TaskOrganizer.pdb
