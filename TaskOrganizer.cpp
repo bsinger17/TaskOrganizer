@@ -11,6 +11,46 @@ enum class TaskState { complete, in_progress, on_hold, new_task };
 std::map<TaskState, std::string> TaskStateToString{ {TaskState::complete, "complete"},
     {TaskState::in_progress, "in_progress"}, {TaskState::on_hold, "on_hold"}, {TaskState::new_task, "new_task"} };
 
+
+//reads in string from user and returns a tm with corresponding month, day, year
+tm readDueDateFromUser()
+{
+    std::stringstream stream;
+    std::string input_string = "";
+    std::string temp = "";
+    int value = 0;
+    std::vector<int> read_buffer;
+    tm due_date;
+
+    std::cout << "\nEnter a due date for the new task. Please use (mm/dd/yyyy) format: ";
+    std::getline(std::cin, input_string);
+    stream << input_string;
+
+    while (!stream.eof()) 
+    {
+        stream >> temp;
+        if (std::stringstream(temp) >> value)
+        {
+            read_buffer.push_back(value);
+        }
+    }
+
+    if (read_buffer.size() != 3)
+    {
+        //error, return empty tm
+        due_date.tm_mday = 1;
+        return due_date;
+    }
+    else
+    {
+        due_date.tm_mon = read_buffer[0]-1; //tm_mon is indexed at 0
+        due_date.tm_mday = read_buffer[1]; //day of month
+        due_date.tm_year = read_buffer[2]-1900; //tm_year is number of years after 1900
+        return due_date;
+    }
+}
+
+
 Task createTask()
 //prompts user to info used to create a new task. Returns that task.
 {
@@ -21,19 +61,16 @@ Task createTask()
 
     std::cout << "\nEnter a name for the new task: ";
     std::getline(std::cin, name);
-    std::cout << "\nEnter a due date for the new task: ";
-    std::getline(std::cin, date);
+    tm tm_date = readDueDateFromUser();
     std::cout << "\nEnter a priority value (0 thru 5, 5 being highest priority) for the new task: ";
     std::cin >> priority;
 
-    return Task(name, date, priority, ts);
+    return Task(name, tm_date, priority, ts);
 }
 
 int main()
 {
     char input;
-
-
 
     //TODO: use string stream formatting to fix user_prompt
     std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\nh) For help\nq) To terminate program\n";
@@ -46,18 +83,15 @@ int main()
         << "q) To terminate program\n"
         << "\n>>";
 
-    Task t1{ "task1","1/1/2022",2,TaskState::new_task };
-    Task t2{ "task2","2/2/2022",2,TaskState::in_progress };
-    Task t3{ "task3","10/19/2021",0,TaskState::on_hold };
+    Task t1{ "task1",tm{ 0, 0, 0, 1, 1, 121 },2,TaskState::new_task };
+    Task t2{ "task2",tm{ 0, 0, 0, 19, 2, 122 },2,TaskState::in_progress };
+    Task t3{ "task3",tm{ 0, 0, 0, 29, 10, 122 },0,TaskState::on_hold };
 
     //TODO: store tasks in a file and read into a data structure
     //for now store them in a vector:
 
     std::vector<Task> task_store = { t1, t2, t3 };
     std::string name;
-
-    //std::time_t result = std::time(nullptr);
-    //std::cout << std::asctime(std::localtime(&result));
 
     while (std::cin>>input)
     {
@@ -72,7 +106,6 @@ int main()
             break;
         case '2':
         {
-            //std::cin.ignore(1); //ignore the newline character
             //add new task to the data structure
             Task temp = createTask();
             task_store.push_back(temp);
