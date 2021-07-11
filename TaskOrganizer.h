@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4996)
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -6,10 +7,12 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <ctime>
+#include <time.h>
+#include <map>
 //#include <cmath>
 //#include <list>
 //#include <forward_list>
-#include <map>
 //#include <algorithm>
 //#include <array>
 //#include <regex>
