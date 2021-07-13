@@ -13,12 +13,10 @@ void Task::print_task_details() const
 	//time_t converted_ddate = std::mktime(&date_output); //dont need this?
 	//std::string dd_out = std::asctime(&date_output);
 
-
-	std::cout << "\nTask Name: " << task_name
-		<< "\nTask Due Date: " << std::asctime(&date_output)
+	std::cout << "\nTask Name: " << task_name 
+		<< "\nTask Due Date: " << (std::asctime(&date_output))
 		<< "Task Priority Value: " << std::to_string(task_priority)
-		<< "\nTask State: " << TaskStateToString[task_state] 
-		<< std::endl;
+		<< "\nTask State: " << TaskStateToString[task_state] << std::endl;
 }
 
 //getters

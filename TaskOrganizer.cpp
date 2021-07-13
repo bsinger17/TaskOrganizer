@@ -15,7 +15,6 @@ std::map<TaskState, std::string> TaskStateToString{ {TaskState::complete, "compl
 //reads in string from user and returns a tm with corresponding month, day, year
 tm readDueDateFromUser()
 {
-    std::stringstream stream;
     std::string input_string = "";
     std::string temp = "";
     int value = 0;
@@ -24,15 +23,14 @@ tm readDueDateFromUser()
 
     std::cout << "\nEnter a due date for the new task. Please use (mm/dd/yyyy) format: ";
     std::getline(std::cin, input_string);
-    stream << input_string;
+    std::stringstream stream(input_string);
 
-    while (!stream.eof()) 
+    while (stream >> value)
     {
-        stream >> temp;
-        if (std::stringstream(temp) >> value)
-        {
-            read_buffer.push_back(value);
-        }
+        read_buffer.push_back(value);
+        if (stream.peek() == '/')
+            stream.ignore();
+
     }
 
     if (read_buffer.size() != 3)
@@ -46,6 +44,11 @@ tm readDueDateFromUser()
         due_date.tm_mon = read_buffer[0]-1; //tm_mon is indexed at 0
         due_date.tm_mday = read_buffer[1]; //day of month
         due_date.tm_year = read_buffer[2]-1900; //tm_year is number of years after 1900
+        
+        //need these members to be nonzero to print a tm
+        due_date.tm_sec = 1;
+        due_date.tm_min = 1;
+        due_date.tm_hour = 1;
         return due_date;
     }
 }
