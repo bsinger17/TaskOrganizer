@@ -68,7 +68,7 @@ Task createTask()
     std::cout << "\nEnter a priority value (0 thru 5, 5 being highest priority) for the new task: ";
     std::cin >> priority;
 
-    return Task(name, tm_date, priority, ts);
+    return Task(name, tm_date, priority, ts, 0);
 }
 
 int main()
@@ -82,6 +82,7 @@ int main()
         << "1) View Current Task List\n"
         << "2) Create a new Task\n"
         << "3) Update the status of a Task\n"
+        << "4) Check Tasks Status\n"
         << "h) For help\n"
         << "q) To terminate program\n"
         << "\n>>";
@@ -111,6 +112,7 @@ int main()
         {
             //add new task to the data structure
             Task temp = createTask();
+            temp.set_task_id_number(task_store.size() + 100); //tasks will be organized as 100,101,102,etc.
             task_store.push_back(temp);
             temp.print_task_details();
             break;
@@ -118,8 +120,29 @@ int main()
         case '3':
             //update a task
             //tasks in the "completed" state should deleted
-            std::cout << "\nSelect a task to update:\n...\n...\n...";
+            std::cout << "\nSelect a task to update:\n";
             break;
+        case '4':
+            //check and print tasks status
+            std::cout << "The following tasks are past due: \n";
+            for (auto i : task_store)
+            {
+                if (i.is_past_due())
+                {
+                    i.print_task_details();
+                }
+            }
+            //TODO: implement Task::days_remaining()
+            //for (auto i : task_store)
+            //{
+            //    std::cout << "The following tasks are due within 10 days: \n";
+            //    if (i.days_remaining() < 10 && !(i.is_past_due()))
+            //    {
+            //        i.print_task_details();
+            //    }
+            //}
+            break;
+
         case 'h':
             //help instructions
             std::cout << user_prompt;
