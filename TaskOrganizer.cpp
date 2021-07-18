@@ -5,34 +5,25 @@
 #include "TaskOrganizer.h"
 #include "Task.h"
 
-
 enum class TaskState { complete, in_progress, on_hold, new_task };
 
 std::map<TaskState, std::string> TaskStateToString{ {TaskState::complete, "complete"},
     {TaskState::in_progress, "in_progress"}, {TaskState::on_hold, "on_hold"}, {TaskState::new_task, "new_task"} };
 
+std::map<std::string, TaskState> StringToTaskState{ {"complete", TaskState::complete},
+    {"in_progress", TaskState::in_progress}, {"on_hold", TaskState::on_hold}, {"new_task", TaskState::new_task} };
 
-//reads in string from user and returns a tm with corresponding month, day, year
-tm readDueDateFromUser()
+tm stringToTm(std::stringstream& stream)
 {
-    std::string input_string = "";
-    std::string temp = "";
     int value = 0;
     std::vector<int> read_buffer;
     tm due_date;
-
-    std::cout << "\nEnter a due date for the new task. Please use (mm/dd/yyyy) format: ";
-    std::getline(std::cin, input_string);
-    std::stringstream stream(input_string);
-
     while (stream >> value)
     {
         read_buffer.push_back(value);
         if (stream.peek() == '/')
             stream.ignore();
-
     }
-
     if (read_buffer.size() != 3)
     {
         //error, return empty tm
@@ -41,10 +32,10 @@ tm readDueDateFromUser()
     }
     else
     {
-        due_date.tm_mon = read_buffer[0]-1; //tm_mon is indexed at 0
+        due_date.tm_mon = read_buffer[0] - 1; //tm_mon is indexed at 0
         due_date.tm_mday = read_buffer[1]; //day of month
-        due_date.tm_year = read_buffer[2]-1900; //tm_year is number of years after 1900
-        
+        due_date.tm_year = read_buffer[2] - 1900; //tm_year is number of years after 1900
+    
         //need these members to be nonzero to print a tm
         due_date.tm_sec = 1;
         due_date.tm_min = 1;
@@ -54,8 +45,23 @@ tm readDueDateFromUser()
 }
 
 
+
+
+//reads in string from user and returns a tm with corresponding month, day, year
+tm readDueDateFromUser()
+{
+    std::string input_string = "";
+
+    std::cout << "\nEnter a due date for the new task. Please use (mm/dd/yyyy) format: ";
+    std::getline(std::cin, input_string);
+    std::stringstream stream(input_string);
+
+    return stringToTm(stream);
+}
+
+
 Task createTask()
-//prompts user to info used to create a new task. Returns that task.
+//prompts user for info needed to create a new task. Returns that task.
 {
     std::string name;
     std::string date = "";
@@ -73,10 +79,33 @@ Task createTask()
 
 int main()
 {
-    char input;
+    //open and read contents from file
+    std::string file_line;
+    std::string file_task_name;
+    std::string file_task_date; //convert to tm
+    int file_task_priority;
+    std::string file_task_state; //convert to TaskState
+    int file_task_id;
+
+    std::ifstream fileInput;
+    fileInput.open("task_file.txt");
+
+    //read data in and store in a data structure
+    std::vector<Task> task_store{};
+    while (std::getline(fileInput, file_line))
+    {
+        std::stringstream ss(file_line);
+        ss >> file_task_name >> file_task_date >> file_task_priority >> file_task_state >> file_task_id;
+
+        std::stringstream ss_date(file_task_date);
+        task_store.push_back(Task(file_task_name, stringToTm(ss_date), file_task_priority, StringToTaskState[file_task_state], file_task_id));
+    }
+
+    //TODO: sort tasks by priority value
+
 
     //TODO: use string stream formatting to fix user_prompt
-    std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\nh) For help\nq) To terminate program\n";
+    std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\n4) Check Tasks Status\nh) For help\nq) To terminate program\n";
 
     std::cout << "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n"
         << "1) View Current Task List\n"
@@ -87,15 +116,7 @@ int main()
         << "q) To terminate program\n"
         << "\n>>";
 
-    Task t1{ "task1",tm{ 0, 0, 0, 1, 1, 121 },2,TaskState::new_task };
-    Task t2{ "task2",tm{ 0, 0, 0, 19, 2, 122 },2,TaskState::in_progress };
-    Task t3{ "task3",tm{ 0, 0, 0, 29, 10, 122 },0,TaskState::on_hold };
-
-    //TODO: store tasks in a file and read into a data structure
-    //for now store them in a vector:
-
-    std::vector<Task> task_store = { t1, t2, t3 };
-    std::string name;
+    char input;
 
     while (std::cin>>input)
     {
@@ -124,7 +145,7 @@ int main()
             break;
         case '4':
             //check and print tasks status
-            std::cout << "The following tasks are past due: \n";
+            std::cout << "\nThe following tasks are past due: \n";
             for (auto i : task_store)
             {
                 if (i.is_past_due())
@@ -132,17 +153,18 @@ int main()
                     i.print_task_details();
                 }
             }
-            //TODO: implement Task::days_remaining()
-            //for (auto i : task_store)
-            //{
-            //    std::cout << "The following tasks are due within 10 days: \n";
-            //    if (i.days_remaining() < 10 && !(i.is_past_due()))
-            //    {
-            //        i.print_task_details();
-            //    }
-            //}
+            std::cout << "\nThe following tasks are due within 10 days: \n";
+            for (auto i : task_store)
+            {
+                if (i.days_remaining() < 10 && !(i.is_past_due()))
+                {
+                    i.print_task_details();
+                }
+            }
             break;
-
+        case 't':
+            //testing case
+            task_store[task_store.size() - 1].days_remaining();
         case 'h':
             //help instructions
             std::cout << user_prompt;
@@ -155,13 +177,14 @@ int main()
             break;
         }
         std::cout << "\n>>";
-
-
-
-
     }
 
-
+    //TODO: implement file output
+    //erase any tasks in "completed" state
+    //write contents of task_store to "file.txt"
+        //sort them by priority value? probably unecessary
+        //overwrite the file as a new copy
+    
 
 }
 

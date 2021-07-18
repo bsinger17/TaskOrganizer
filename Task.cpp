@@ -5,7 +5,6 @@ Task::Task(std::string name, tm date, int priority, TaskState state, int id)
 {
 }
 
-
 void Task::print_task_details() const //TODO: make this sort the data structure by priority value and check if overdue
 {
 	tm date_output = due_date; //making a copy
@@ -73,8 +72,15 @@ bool Task::is_past_due() const
 	return (0 >= std::difftime(converted_ddate, current_time)); //task is past due if diff < 0
 }
 
-//TODO: implement helper function
-//int days_remaining(const std::string& name) const
-//{
-//
-//}
+int Task::days_remaining() const
+//returns a negative value if past due
+{
+	//get current time
+	const std::time_t current_time = std::time(nullptr);
+
+	std::tm ddate{ due_date }; //make copy of due_date since the member is const
+	time_t converted_ddate = std::mktime(&ddate);
+
+	//we never want to round up here so that tasks are completed ahead of the due_date
+	return int((std::difftime(converted_ddate, current_time)) / ONE_DAY); 
+}
