@@ -11,6 +11,7 @@ public:
 	//TODO: update these to use pointers?
 	//getters
 	void print_task_details() const;
+	std::string get_task_name() const;
 	tm get_due_date() const;
 	int get_task_priority() const;
 	TaskState get_task_state() const;

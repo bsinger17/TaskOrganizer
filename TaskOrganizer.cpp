@@ -170,8 +170,8 @@ int main()
             std::cout << user_prompt;
             break;
         case 'q':
-            //quit program
-            return 0;
+            //quit program       
+            goto terminate_task_org;
         default:
             std::cout << "\nno valid input, enter \'h\' for help\n";
             break;
@@ -179,13 +179,29 @@ int main()
         std::cout << "\n>>";
     }
 
-    //TODO: implement file output
-    //erase any tasks in "completed" state
-    //write contents of task_store to "file.txt"
-        //sort them by priority value? probably unecessary
-        //overwrite the file as a new copy
-    
+terminate_task_org:
+    //file output
+    std::ofstream fileOutput;
+    fileOutput.open("task_file.txt");
 
+    //write data to txt file
+    for (auto j : task_store)
+    {
+        if (!(j.get_task_state() == TaskState::complete)) //omit tasks that are in "complete" state
+        {
+            //convert date to printable time
+            std::string date_output = std::to_string(j.get_due_date().tm_mon) + "/" + std::to_string(j.get_due_date().tm_mday + 2) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
+
+            //ExampleTask1 01/01/2030 1 new_task 100
+            fileOutput << j.get_task_name() << " "
+                << date_output << " "
+                << j.get_task_priority() << " "
+                << TaskStateToString[j.get_task_state()] << " "
+                << j.get_task_id_number() << "\n";
+        }
+    }
+    fileOutput.close();
+    return 0;
 }
 
 

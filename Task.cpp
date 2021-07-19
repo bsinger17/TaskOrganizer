@@ -18,6 +18,11 @@ void Task::print_task_details() const //TODO: make this sort the data structure 
 }
 
 //getters
+std::string Task::get_task_name() const
+{
+	return task_name;
+}
+
 std::tm Task::get_due_date() const
 {
 	return due_date;
@@ -31,6 +36,11 @@ int Task::get_task_priority() const
 TaskState Task::get_task_state() const
 {
 	return task_state;
+}
+
+int Task::get_task_id_number() const
+{
+	return task_id_number;
 }
 
 //setters
