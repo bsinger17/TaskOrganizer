@@ -102,7 +102,7 @@ int main()
     }
 
     //TODO: sort tasks by priority value
-
+    //std::cout << task_store[1].get_due_date().tm_mon << "\n";
 
     //TODO: use string stream formatting to fix user_prompt
     std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\n4) Check Tasks Status\nh) For help\nq) To terminate program\n";
@@ -190,7 +190,7 @@ terminate_task_org:
         if (!(j.get_task_state() == TaskState::complete)) //omit tasks that are in "complete" state
         {
             //convert date to printable time
-            std::string date_output = std::to_string(j.get_due_date().tm_mon) + "/" + std::to_string(j.get_due_date().tm_mday + 2) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
+            std::string date_output = std::to_string(j.get_due_date().tm_mon + 1) + "/" + std::to_string(j.get_due_date().tm_mday) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
 
             //ExampleTask1 01/01/2030 1 new_task 100
             fileOutput << j.get_task_name() << " "
