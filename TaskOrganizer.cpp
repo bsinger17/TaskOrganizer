@@ -101,16 +101,14 @@ int main()
     //TODO: use string stream formatting to fix user_prompt
     std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\n4) Check Tasks Status\nh) For help\nq) To terminate program\n";
 
-    //std::cout << "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n"
-    //    << "1) View Current Task List\n"
-    //    << "2) Create a new Task\n"
-    //    << "3) Update the status of a Task\n"
-    //    << "4) Check Tasks Status\n"
-    //    << "h) For help\n"
-    //    << "q) To terminate program\n"
-    //    << "\n>>";
-
-    std::cout << user_prompt << "\n";
+    std::cout << "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n"
+        << "1) View Current Task List\n"
+        << "2) Create a new Task\n"
+        << "3) Update the status of a Task\n"
+        << "4) Check Tasks Status\n"
+        << "h) For help\n"
+        << "q) To terminate program\n"
+        << "\n>>";
 
     char input;
 
