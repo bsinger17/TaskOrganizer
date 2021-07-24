@@ -73,7 +73,7 @@ Task createTask()
     std::cout << "\nEnter a name for the new task: ";
     std::getline(std::cin, name);
     tm tm_date = readDueDateFromUser();
-    std::cout << "\nEnter a priority value (0 thru 5, 5 being highest priority) for the new task: ";
+    std::cout << "\nEnter a priority value (1 thru 5, 0 being highest priority) for the new task: ";
     std::cin >> priority;
 
     return Task(name, tm_date, priority, ts, 0);
@@ -104,8 +104,15 @@ void checkTaskStatus(const std::vector<Task>& task_store)
     color(7); //cyan text
 }
 
+void sortTasks(std::vector<Task>& task_store)
+//sorts Tasks by priority value
+{
+    std::sort(task_store.begin(), task_store.end(), [](Task a, Task b) {return a.get_task_priority() < b.get_task_priority(); });
+}
+
 int main()
 {
+    //TODO: put this in a function
     //open and read contents from file
     std::string file_line;
     std::string file_task_name;
@@ -128,8 +135,10 @@ int main()
         task_store.push_back(Task(file_task_name, stringToTm(ss_date), file_task_priority, StringToTaskState[file_task_state], file_task_id));
     }
 
+    sortTasks(task_store);
     checkTaskStatus(task_store);
-    std::string line_break = "=====================================\n=====================================\n"; //better way to do this?
+    char input;
+    std::string line_break = "\n=====================================\n=====================================\n\n"; //better way to do this?
     std::string user_prompt = "Welcome to Ben's Task Organizer!\n"
         "\nTo begin, please enter one of the following commands:"
         "\n1) View Current Task List\n2) Create a new Task"
@@ -137,8 +146,7 @@ int main()
         "\n4) Check Tasks Status"
         "\nh) For help"
         "\nq) To terminate program\n";
-    std::cout << "\n" << line_break << "\n" << user_prompt << "\n>>";
-    char input;
+    std::cout << line_break << user_prompt << "\n>>";
 
     while (std::cin>>input)
     {
@@ -158,11 +166,12 @@ int main()
             temp.set_task_id_number(task_store.size() + 100); //tasks will be organized as 100,101,102,etc.
             task_store.push_back(temp);
             temp.print_task_details();
+            sortTasks(task_store);
             break;
         }
         case '3':
             //update a task
-            //tasks in the "completed" state should deleted
+            //tasks in the "completed" state are removed upon termination
             std::cout << "\nSelect a task to update:\n";
             break;
         case '4':
@@ -177,13 +186,14 @@ int main()
             //quit program       
             goto terminate_task_org;
         default:
-            std::cout << "\nno valid input, enter \'h\' for help\n";
+            std::cout << "\ninvalid input, enter \'h\' for help\n";
             break;
         }
         std::cout << "\n>>";
     }
 
 terminate_task_org:
+    //TODO: put this in a function
     //file output
     std::ofstream fileOutput;
     fileOutput.open("task_file.txt");

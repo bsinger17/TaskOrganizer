@@ -8,9 +8,9 @@ class Task
 public:
 	Task(std::string name, std::tm date, int priority, TaskState state, int id=0);
 
-	//TODO: update these to use pointers?
 	//getters
 	void print_task_details() const;
+	void print_task_details_lite() const;
 	std::string get_task_name() const;
 	tm get_due_date() const;
 	int get_task_priority() const;

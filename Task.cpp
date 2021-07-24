@@ -5,7 +5,7 @@ Task::Task(std::string name, tm date, int priority, TaskState state, int id)
 {
 }
 
-void Task::print_task_details() const //TODO: make this sort the data structure by priority value and check if overdue
+void Task::print_task_details() const //TODO: make this sort the data structure by priority value
 {
 	tm date_output = due_date; //making a copy
 	std::mktime(&date_output);
@@ -54,8 +54,10 @@ void Task::set_task_due_date(int year, int month, int day)
 }
 
 void Task::set_task_priority(int priority_value)
+//1 is considered highest priority
+//forces a value between 1 and 5
 {
-	if(priority_value < 0) task_priority = 0;
+	if(priority_value < 1) task_priority = 1;
 	else if(priority_value > 5) task_priority = 5;
 	else task_priority = priority_value;
 }
@@ -70,6 +72,7 @@ void Task::set_task_id_number(int id)
 	task_id_number = id;
 }
 
+//helper functions
 bool Task::is_past_due() const
 {
 	//get and print current time in string format

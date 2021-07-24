@@ -12,8 +12,9 @@
 #include <map>
 #include <chrono>
 #include <Windows.h>
+#include <algorithm>
 
-extern enum class TaskState;
+enum class TaskState;
 extern std::map<TaskState, std::string> TaskStateToString;
 extern std::map<std::string, TaskState> StringToTaskState;
 
