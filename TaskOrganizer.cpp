@@ -1,19 +1,25 @@
 // TaskOrganizer.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-
 #include "TaskOrganizer.h"
 #include "Task.h"
 
 enum class TaskState { complete, in_progress, on_hold, new_task };
 
+//string <--> TaskState converters
 std::map<TaskState, std::string> TaskStateToString{ {TaskState::complete, "complete"},
     {TaskState::in_progress, "in_progress"}, {TaskState::on_hold, "on_hold"}, {TaskState::new_task, "new_task"} };
-
 std::map<std::string, TaskState> StringToTaskState{ {"complete", TaskState::complete},
     {"in_progress", TaskState::in_progress}, {"on_hold", TaskState::on_hold}, {"new_task", TaskState::new_task} };
 
+void color(int color)
+//for displaying late and upcoming tasks
+{
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
 tm stringToTm(std::stringstream& stream)
+//converts string user input to tm
 {
     int value = 0;
     std::vector<int> read_buffer;
@@ -44,8 +50,8 @@ tm stringToTm(std::stringstream& stream)
     }
 }
 
-//reads in string from user and returns a tm with corresponding month, day, year
 tm readDueDateFromUser()
+//reads in string from user and returns a tm with corresponding month, day, year
 {
     std::string input_string = "";
 
@@ -73,6 +79,31 @@ Task createTask()
     return Task(name, tm_date, priority, ts, 0);
 }
 
+void checkTaskStatus(const std::vector<Task>& task_store)
+//displays important task status to user
+{
+    std::cout << "\nThe following tasks are past due: \n";
+    color(4); //red text
+    for (auto i : task_store)
+    {
+        if (i.is_past_due())
+        {
+            i.print_task_details();
+        }
+    }
+    color(7); //white text
+    std::cout << "\nThe following tasks are due within 10 days: \n";
+    color(11);
+    for (auto i : task_store)
+    {
+        if (i.days_remaining() < 10 && !(i.is_past_due()))
+        {
+            i.print_task_details();
+        }
+    }
+    color(7); //cyan text
+}
+
 int main()
 {
     //open and read contents from file
@@ -97,19 +128,16 @@ int main()
         task_store.push_back(Task(file_task_name, stringToTm(ss_date), file_task_priority, StringToTaskState[file_task_state], file_task_id));
     }
 
-
-    //TODO: use string stream formatting to fix user_prompt
-    std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\n4) Check Tasks Status\nh) For help\nq) To terminate program\n";
-
-    std::cout << "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n"
-        << "1) View Current Task List\n"
-        << "2) Create a new Task\n"
-        << "3) Update the status of a Task\n"
-        << "4) Check Tasks Status\n"
-        << "h) For help\n"
-        << "q) To terminate program\n"
-        << "\n>>";
-
+    checkTaskStatus(task_store);
+    std::string line_break = "=====================================\n=====================================\n"; //better way to do this?
+    std::string user_prompt = "Welcome to Ben's Task Organizer!\n"
+        "\nTo begin, please enter one of the following commands:"
+        "\n1) View Current Task List\n2) Create a new Task"
+        "\n3) Update the status of a Task"
+        "\n4) Check Tasks Status"
+        "\nh) For help"
+        "\nq) To terminate program\n";
+    std::cout << "\n" << line_break << "\n" << user_prompt << "\n>>";
     char input;
 
     while (std::cin>>input)
@@ -139,26 +167,8 @@ int main()
             break;
         case '4':
             //check and print tasks status
-            std::cout << "\nThe following tasks are past due: \n";
-            for (auto i : task_store)
-            {
-                if (i.is_past_due())
-                {
-                    i.print_task_details();
-                }
-            }
-            std::cout << "\nThe following tasks are due within 10 days: \n";
-            for (auto i : task_store)
-            {
-                if (i.days_remaining() < 10 && !(i.is_past_due()))
-                {
-                    i.print_task_details();
-                }
-            }
+            checkTaskStatus(task_store);
             break;
-        case 't':
-            //testing case
-            task_store[task_store.size() - 1].days_remaining();
         case 'h':
             //help instructions
             std::cout << user_prompt;
@@ -184,9 +194,10 @@ terminate_task_org:
         if (!(j.get_task_state() == TaskState::complete)) //omit tasks that are in "complete" state
         {
             //convert date to printable time
-            std::string date_output = std::to_string(j.get_due_date().tm_mon + 1) + "/" + std::to_string(j.get_due_date().tm_mday) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
+            std::string date_output = std::to_string(j.get_due_date().tm_mon + 1) + "/" 
+                + std::to_string(j.get_due_date().tm_mday) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
 
-            //ExampleTask1 01/01/2030 1 new_task 100
+            //text file store in the format: ExampleTask1 01/01/2030 1 new_task 100
             fileOutput << j.get_task_name() << " "
                 << date_output << " "
                 << j.get_task_priority() << " "
