@@ -12,14 +12,14 @@ std::map<TaskState, std::string> TaskStateToString{ {TaskState::complete, "compl
 std::map<std::string, TaskState> StringToTaskState{ {"complete", TaskState::complete},
     {"in_progress", TaskState::in_progress}, {"on_hold", TaskState::on_hold}, {"new_task", TaskState::new_task} };
 
-void color(int color)
 //for displaying late and upcoming tasks
+void color(int color)
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
-tm stringToTm(std::stringstream& stream)
 //converts string user input to tm
+tm stringToTm(std::stringstream& stream)
 {
     int value = 0;
     std::vector<int> read_buffer;
@@ -50,8 +50,8 @@ tm stringToTm(std::stringstream& stream)
     }
 }
 
-tm readDueDateFromUser()
 //reads in string from user and returns a tm with corresponding month, day, year
+tm readDueDateFromUser()
 {
     std::string input_string = "";
 
@@ -62,8 +62,8 @@ tm readDueDateFromUser()
     return stringToTm(stream);
 }
 
-Task createTask()
 //prompts user for info needed to create a new task. Returns that task.
+Task createTask()
 {
     std::string name;
     std::string date = "";
@@ -79,8 +79,9 @@ Task createTask()
     return Task(name, tm_date, priority, ts, 0);
 }
 
-void checkTaskStatus(const std::vector<Task>& task_store)
 //displays important task status to user
+//TODO: only display the prompts if something is due? would require looping twice
+void checkTaskStatus(const std::vector<Task>& task_store)
 {
     std::cout << "\nThe following tasks are past due: \n\n";
     color(4); //red text
@@ -104,16 +105,15 @@ void checkTaskStatus(const std::vector<Task>& task_store)
     color(7); //cyan text
 }
 
-void sortTasks(std::vector<Task>& task_store)
 //sorts Tasks by priority value
+void sortTasks(std::vector<Task>& task_store)
 {
     std::sort(task_store.begin(), task_store.end(), [](Task a, Task b) {return a.get_task_priority() < b.get_task_priority(); });
 }
 
-int main()
+//read contents from file into vector and return it
+std::vector<Task> readFileData(std::string filename) 
 {
-    //TODO: put this in a function
-    //open and read contents from file
     std::string file_line;
     std::string file_task_name;
     std::string file_task_date; //convert to tm
@@ -122,7 +122,7 @@ int main()
     int file_task_id;
 
     std::ifstream fileInput;
-    fileInput.open("task_file.txt");
+    fileInput.open(filename);
 
     //read data in and store in a data structure
     std::vector<Task> task_store{};
@@ -134,10 +134,39 @@ int main()
         std::stringstream ss_date(file_task_date);
         task_store.push_back(Task(file_task_name, stringToTm(ss_date), file_task_priority, StringToTaskState[file_task_state], file_task_id));
     }
+    return task_store;
+}
 
-    sortTasks(task_store);
-    checkTaskStatus(task_store);
+//output processed data to file
+void writeFileData(std::string filename, const std::vector<Task>& task_store)
+{
+    std::ofstream fileOutput;
+    fileOutput.open(filename);
+
+    //write data to txt file
+    for (auto j : task_store)
+    {
+        if (!(j.get_task_state() == TaskState::complete)) //omit tasks that are in "complete" state
+        {
+            //convert date to printable time
+            std::string date_output = std::to_string(j.get_due_date().tm_mon + 1) + "/"
+                + std::to_string(j.get_due_date().tm_mday) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
+
+            //text file store in the format: ExampleTask1 01/01/2030 1 new_task 100
+            fileOutput << j.get_task_name() << " "
+                << date_output << " "
+                << j.get_task_priority() << " "
+                << TaskStateToString[j.get_task_state()] << " "
+                << j.get_task_id_number() << "\n";
+        }
+    }
+    fileOutput.close();
+}
+
+int main()
+{
     char input;
+    std::string filename = "task_file.txt";
     std::string line_break = "\n=====================================\n=====================================\n\n"; //better way to do this?
     std::string user_prompt = "Welcome to Ben's Task Organizer!\n"
         "\nTo begin, please enter one of the following commands:"
@@ -146,6 +175,12 @@ int main()
         "\n4) Check Tasks Status"
         "\nh) For help"
         "\nq) To terminate program\n";
+
+    std::vector<Task> task_store = readFileData(filename);
+    sortTasks(task_store);
+    checkTaskStatus(task_store);
+
+    //prompt the user at startup
     std::cout << line_break << user_prompt << "\n>>";
 
     while (std::cin>>input)
@@ -193,29 +228,7 @@ int main()
     }
 
 terminate_task_org:
-    //TODO: put this in a function
-    //file output
-    std::ofstream fileOutput;
-    fileOutput.open("task_file.txt");
-
-    //write data to txt file
-    for (auto j : task_store)
-    {
-        if (!(j.get_task_state() == TaskState::complete)) //omit tasks that are in "complete" state
-        {
-            //convert date to printable time
-            std::string date_output = std::to_string(j.get_due_date().tm_mon + 1) + "/" 
-                + std::to_string(j.get_due_date().tm_mday) + "/" + (std::to_string(j.get_due_date().tm_year + 1900));
-
-            //text file store in the format: ExampleTask1 01/01/2030 1 new_task 100
-            fileOutput << j.get_task_name() << " "
-                << date_output << " "
-                << j.get_task_priority() << " "
-                << TaskStateToString[j.get_task_state()] << " "
-                << j.get_task_id_number() << "\n";
-        }
-    }
-    fileOutput.close();
+    writeFileData(filename, task_store);
     return 0;
 }
 
