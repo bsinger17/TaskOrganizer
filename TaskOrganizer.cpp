@@ -44,9 +44,6 @@ tm stringToTm(std::stringstream& stream)
     }
 }
 
-
-
-
 //reads in string from user and returns a tm with corresponding month, day, year
 tm readDueDateFromUser()
 {
@@ -58,7 +55,6 @@ tm readDueDateFromUser()
 
     return stringToTm(stream);
 }
-
 
 Task createTask()
 //prompts user for info needed to create a new task. Returns that task.
@@ -101,8 +97,6 @@ int main()
         task_store.push_back(Task(file_task_name, stringToTm(ss_date), file_task_priority, StringToTaskState[file_task_state], file_task_id));
     }
 
-    //TODO: sort tasks by priority value
-    //std::cout << task_store[1].get_due_date().tm_mon << "\n";
 
     //TODO: use string stream formatting to fix user_prompt
     std::string user_prompt = "Welcome to Ben's Task Organizer!\n\nTo begin, please enter one of the following commands:\n1) View Current Task List\n2) Create a new Task\n3) Update the status of a Task\n4) Check Tasks Status\nh) For help\nq) To terminate program\n";

@@ -24,9 +24,3 @@ extern enum class TaskState;
 extern std::map<TaskState, std::string> TaskStateToString;
 extern std::map<std::string, TaskState> StringToTaskState;
 
-//std::string getStringForTaskState(TaskState state_val)
-//{
-//	std::vector<std::string> enum_strings = { "complete", "in_progress", "on_hold", "new_task" }; //bad
-//	return enum_strings[int(state_val)];
-//}
-
