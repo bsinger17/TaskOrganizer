@@ -73,7 +73,7 @@ Task createTask()
     std::cout << "\nEnter a name for the new task: ";
     std::getline(std::cin, name);
     tm tm_date = readDueDateFromUser();
-    std::cout << "\nEnter a priority value (1 thru 5, 0 being highest priority) for the new task: ";
+    std::cout << "\nEnter a priority value (1 thru 5, 1 being highest priority) for the new task: ";
     std::cin >> priority;
 
     return Task(name, tm_date, priority, ts, 0);
@@ -82,23 +82,23 @@ Task createTask()
 void checkTaskStatus(const std::vector<Task>& task_store)
 //displays important task status to user
 {
-    std::cout << "\nThe following tasks are past due: \n";
+    std::cout << "\nThe following tasks are past due: \n\n";
     color(4); //red text
     for (auto i : task_store)
     {
         if (i.is_past_due())
         {
-            i.print_task_details();
+            i.print_task_details_lite();
         }
     }
     color(7); //white text
-    std::cout << "\nThe following tasks are due within 10 days: \n";
+    std::cout << "\nThe following tasks are due within 10 days: \n\n";
     color(11);
     for (auto i : task_store)
     {
         if (i.days_remaining() < 10 && !(i.is_past_due()))
         {
-            i.print_task_details();
+            i.print_task_details_lite();
         }
     }
     color(7); //cyan text
@@ -186,7 +186,7 @@ int main()
             //quit program       
             goto terminate_task_org;
         default:
-            std::cout << "\ninvalid input, enter \'h\' for help\n";
+            std::cout << "\nInvalid input, enter \'h\' for help\n";
             break;
         }
         std::cout << "\n>>";

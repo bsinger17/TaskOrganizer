@@ -5,7 +5,8 @@ Task::Task(std::string name, tm date, int priority, TaskState state, int id)
 {
 }
 
-void Task::print_task_details() const //TODO: make this sort the data structure by priority value
+void Task::print_task_details() const
+//prints full task information
 {
 	tm date_output = due_date; //making a copy
 	std::mktime(&date_output);
@@ -15,6 +16,15 @@ void Task::print_task_details() const //TODO: make this sort the data structure 
 		<< "\nTask Due Date: " << (std::asctime(&date_output))
 		<< "Task Priority Value: " << std::to_string(task_priority)
 		<< "\nTask State: " << TaskStateToString[task_state] << std::endl;
+}
+
+void Task::print_task_details_lite() const 
+//prints a smaller form of task for readability
+{
+	tm date_output = due_date; //making a copy
+	std::mktime(&date_output);
+
+	std::cout << "Task Name: " << task_name << "\nDue Date: " << (std::asctime(&date_output)) << std::endl;
 }
 
 //getters
