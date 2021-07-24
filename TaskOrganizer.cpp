@@ -55,7 +55,7 @@ tm readDueDateFromUser()
 {
     std::string input_string = "";
 
-    std::cout << "\nEnter a due date for the new task. Please use (mm/dd/yyyy) format: ";
+    std::cout << "\nEnter a due date for the task. Please use (mm/dd/yyyy) format: ";
     std::getline(std::cin, input_string);
     std::stringstream stream(input_string);
 
@@ -77,6 +77,58 @@ Task createTask()
     std::cin >> priority;
 
     return Task(name, tm_date, priority, ts, 0);
+}
+
+//call this to provide a menu for the user to update task_state
+void updateTaskMenu(std::vector<Task>& task_store)
+{
+    int id = 0;
+    std::cout << "\nEnter the ID of the task you want to update:\n"
+        "(Enter \"1\" to print all tasks)\n";
+
+    while (std::cin >> id)
+    {
+        if (id == 1)
+        {
+            for (auto i : task_store)
+            {
+                i.print_task_details();
+            }
+        }
+        else if (id < 100 || id > 120)
+        {
+            std::cout << "Invalid input, please enter the task ID (eg: 101, 102, etc.)\n"
+                "(Enter \"1\" to print all tasks)\n";
+        }
+        else
+        {
+            for (int i=0; i<task_store.size(); i++)
+            {
+                if (task_store[i].get_task_id_number() == id)
+                {
+                    std::string task_state_input;
+                    std::cout << "Please enter a new task state (new_task, in_progress, on_hold, complete)\n";
+                    
+                    while (std::cin >> task_state_input)
+                    {
+                        if (StringToTaskState.count(task_state_input))
+                        {
+                            task_store[i].set_task_state(StringToTaskState[task_state_input]);
+                            task_store[i].print_task_details();
+                            return;
+                        }
+                        else
+                        {
+                            std::cout << "Invalid input, please enter a new task state (new_task, in_progress, on_hold, complete)\n";
+                        }
+
+                    }
+
+                }
+            }
+            std::cout << "Task not found, please enter a valid task\n";
+        }
+    }
 }
 
 //displays important task status to user
@@ -112,7 +164,7 @@ void sortTasks(std::vector<Task>& task_store)
 }
 
 //read contents from file into vector and return it
-std::vector<Task> readFileData(std::string filename) 
+std::vector<Task> readFileData(const std::string& filename) 
 {
     std::string file_line;
     std::string file_task_name;
@@ -138,7 +190,7 @@ std::vector<Task> readFileData(std::string filename)
 }
 
 //output processed data to file
-void writeFileData(std::string filename, const std::vector<Task>& task_store)
+void writeFileData(const std::string& filename, const std::vector<Task>& task_store)
 {
     std::ofstream fileOutput;
     fileOutput.open(filename);
@@ -198,7 +250,7 @@ int main()
         {
             //add new task to the data structure
             Task temp = createTask();
-            temp.set_task_id_number(task_store.size() + 100); //tasks will be organized as 100,101,102,etc.
+            temp.set_task_id_number(task_store.size() + 100); //tasks will be assigned IDs the order: 100,101,102,etc.
             task_store.push_back(temp);
             temp.print_task_details();
             sortTasks(task_store);
@@ -206,8 +258,7 @@ int main()
         }
         case '3':
             //update a task
-            //tasks in the "completed" state are removed upon termination
-            std::cout << "\nSelect a task to update:\n";
+            updateTaskMenu(task_store);
             break;
         case '4':
             //check and print tasks status
